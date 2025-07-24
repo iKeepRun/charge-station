@@ -1,0 +1,11 @@
+
+ POST localhost:8080/pub
+Content-Type: application/x-www-form-urlencoded
+
+topic="test"&message="一条测试数据"
+
+####
+ POST localhost:8080/sub
+Content-Type: application/x-www-form-urlencoded
+
+topic="test"
