@@ -9,3 +9,15 @@ topic="test"&message="一条测试数据"
 Content-Type: application/x-www-form-urlencoded
 
 topic="test"
+
+###
+  POST localhost:8080/factory/pub
+Content-Type: application/x-www-form-urlencoded
+
+topic=test&message=哈喽!world
+
+####
+ POST localhost:8080/factory/sub
+Content-Type: application/x-www-form-urlencoded
+
+topic="test"

@@ -23,9 +23,9 @@ public class MqttUtil {
 
     @PostConstruct
     public void init() throws InterruptedException {
-        createClient();
-//        Thread.sleep(5);
-        connect();
+//        createClient();
+//
+//        connect();
     }
 
     private void createClient() {

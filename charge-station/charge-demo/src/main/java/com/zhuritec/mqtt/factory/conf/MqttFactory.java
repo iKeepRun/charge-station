@@ -19,8 +19,10 @@ import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
+import org.springframework.messaging.MessagingException;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -30,7 +32,8 @@ public class MqttFactory {
     @Resource
     private Mqttconfig mqttconfig;
 
-    public DefaultMqttPahoClientFactory getMqttFactory() {
+    @Bean
+    public MqttPahoClientFactory getMqttFactory() {
         DefaultMqttPahoClientFactory factory=new DefaultMqttPahoClientFactory();
         MqttConnectOptions options = mqttconfig.getOptions();
         options.setServerURIs(new String[]{
@@ -62,10 +65,10 @@ public class MqttFactory {
      * @return
      */
     @Bean
-    @ServiceActivator(outputChannel = MqttConstant.OUTBOUND_CHANNEL_NAME)
-    public MqttPahoMessageHandler outHandler(){
+    @ServiceActivator(inputChannel = MqttConstant.OUTBOUND_CHANNEL_NAME)
+    public MqttPahoMessageHandler outHandler(DirectChannel errorChannel){
         MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(mqttconfig.getClientId(), getMqttFactory());
-
+        log.info("发送消息到：{}",messageHandler.getConnectionInfo());
         return messageHandler;
     }
 
@@ -88,8 +91,14 @@ public class MqttFactory {
     @Bean
     @ServiceActivator(inputChannel = MqttConstant.INBOUND_CHANNEL_NAME)
     public MessageHandler inHandler(){
-        return (message)->
-            log.info("收到消息：{}",message.getPayload().toString());
+        return new MessageHandler() {
+            @Override
+            public void handleMessage(Message<?> message) throws MessagingException {
+
+                //接收消息的处理业务逻辑
+                log.info(message.getPayload().toString());
+            }
+        };
     }
 
 
@@ -105,4 +114,5 @@ public class MqttFactory {
         adapter.setOutputChannel(getInboundChannel());
         return adapter;
     }
+
 }
