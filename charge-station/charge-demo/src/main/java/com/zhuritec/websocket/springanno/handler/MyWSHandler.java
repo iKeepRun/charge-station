@@ -21,6 +21,7 @@ public class MyWSHandler implements WebSocketHandler {
         //取出消息内容
         String payload = message.getPayload().toString();
         Object token = session.getAttributes().get("Token");
+        log.info(">>>>>收到客户端消息:{}",payload);
     }
 
     @Override

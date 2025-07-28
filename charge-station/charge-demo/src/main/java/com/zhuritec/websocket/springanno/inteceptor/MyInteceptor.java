@@ -16,7 +16,7 @@ public class MyInteceptor implements HandshakeInterceptor {
         // TODO Auto-generated method stub
 
         log.info("beforeHandshake 拦截之前");
-        return false;
+        return true;
 
     }
 

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
-@ServerEndpoint("/tomcat/ws/server")
+//@ServerEndpoint("/ws/server")
 @Component
 public class WsService {
 
