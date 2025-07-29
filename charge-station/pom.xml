@@ -21,6 +21,7 @@
         <spring.boot.version>3.0.0</spring.boot.version>
         <lombok.version>1.18.24</lombok.version>
         <netty.version>4.1.68.Final</netty.version>
+        <protobuf-java-util.version>4.28.3</protobuf-java-util.version>
     </properties>
 
     <!--  全局导入 -->
@@ -63,6 +64,13 @@
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
             <version>${netty.version}</version>
+        </dependency>
+
+<!--        protobuf工具包-->
+        <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java-util</artifactId>
+                <version>${protobuf-java-util.version}</version>
         </dependency>
     </dependencies>
 
