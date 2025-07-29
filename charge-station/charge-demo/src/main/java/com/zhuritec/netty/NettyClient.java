@@ -2,6 +2,7 @@ package com.zhuritec.netty;
 
 import com.zhuritec.netty.handler.MySimpleClientHandler;
 import com.zhuritec.netty.handler.MySimpleClientPkgHandler;
+import com.zhuritec.netty.handler.MySimpleClientProtoHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.Unpooled;
@@ -14,6 +15,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.FixedLengthFrameDecoder;
+import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.string.StringEncoder;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -56,12 +58,14 @@ public class NettyClient implements CommandLineRunner {
 
                         ChannelPipeline pipeline = ch.pipeline();
                         //固定分隔符，解决粘包拆包问题
-                        pipeline.addLast(new DelimiterBasedFrameDecoder(1024, Unpooled.copiedBuffer("$_$".getBytes(StandardCharsets.UTF_8))));
+//                        pipeline.addLast(new DelimiterBasedFrameDecoder(1024, Unpooled.copiedBuffer("$_$".getBytes(StandardCharsets.UTF_8))));
                         //固定发送消息的大小，解决粘包拆包问题
 //                        pipeline.addLast(new FixedLengthFrameDecoder(11));
-                        pipeline.addLast(new StringEncoder());
-                        pipeline.addLast(new MySimpleClientPkgHandler());
-
+//                        pipeline.addLast(new StringEncoder());
+//                        pipeline.addLast(new MySimpleClientPkgHandler());
+                        //将bytebuf转换成protobuf
+                        pipeline.addLast(new ProtobufEncoder());
+                        pipeline.addLast(new MySimpleClientProtoHandler());
 
                     }
                 });

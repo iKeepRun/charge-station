@@ -1,6 +1,8 @@
 package com.zhuritec.netty;
 
 import com.zhuritec.netty.handler.MySimpleServerPkgHandler;
+import com.zhuritec.netty.handler.MySimpleServerProtoHandler;
+import com.zhuritec.protobuf.UserProtobuf;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -8,6 +10,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.FixedLengthFrameDecoder;
+import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -56,10 +59,13 @@ public class NettyServer implements CommandLineRunner {
 //                        pipeline.addLast(new MySimpleServerHandler());
 //                        pipeline.addLast(new MyAdapterServerHandler());
                         //添加固定的分隔符来解决粘包拆包的问题
-                        pipeline.addLast(new DelimiterBasedFrameDecoder(1024, Unpooled.copiedBuffer("$_$".getBytes(StandardCharsets.UTF_8))));
+//                        pipeline.addLast(new DelimiterBasedFrameDecoder(1024, Unpooled.copiedBuffer("$_$".getBytes(StandardCharsets.UTF_8))));
 //                        pipeline.addLast(new FixedLengthFrameDecoder(11));
-                        pipeline.addLast(new StringDecoder());
-                        pipeline.addLast(new MySimpleServerPkgHandler());
+//                        pipeline.addLast(new StringDecoder());
+//                        pipeline.addLast(new MySimpleServerPkgHandler());
+                        //指定需要解码的protobuf对象类型
+                        pipeline.addLast(new ProtobufDecoder(UserProtobuf.User.getDefaultInstance()));
+                        pipeline.addLast(new MySimpleServerProtoHandler());
                     }
                 });
 
