@@ -28,13 +28,12 @@ public class MySimpleClientProtoHandler extends SimpleChannelInboundHandler<User
 //        log.info("客户端的id:",ctx.channel().id().asLongText());
 
 //        String msg="hello world$_$";
-//        for (int i = 1; i <=100; i++) {
-//
-//            log.info("客户端第{}次发送消息:{}",i,msg);
-//            ctx.writeAndFlush(msg);
-//        }
+        for (int i = 1; i <=100; i++) {
+            UserProtobuf.User user = UserProtobuf.User.newBuilder().setName("张三" + i).build();
+            log.info("客户端第{}次发送protobuf消息:{}",i,user.getName());
+            ctx.writeAndFlush(user);
+        }
 //        ByteBuf byteBuf = Unpooled.copiedBuffer(msg.getBytes());
-        //向服务端发送protobuf对象
-        ctx.writeAndFlush(UserProtobuf.User.newBuilder().setName("张三").build());
+
     }
 }

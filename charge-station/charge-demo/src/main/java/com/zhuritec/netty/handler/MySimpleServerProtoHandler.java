@@ -14,10 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class MySimpleServerProtoHandler extends SimpleChannelInboundHandler<UserProtobuf.User> {
+    int count=1;
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, UserProtobuf.User msg) throws Exception {
-        log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>MySimpleServerProtoHandler接收到客户端的消息 :{}<<<: ",msg.getName());
-
+        log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>MySimpleServerProtoHandler接收到客户端的第{}条消息 :{}<<<: ",count,msg.getName());
+        count++;
         //向下传递
         ctx.fireChannelRead(msg);
     }

@@ -16,6 +16,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.FixedLengthFrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
+import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.codec.string.StringEncoder;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +32,9 @@ import java.nio.charset.StandardCharsets;
 @Order(2)
 public class NettyClient implements CommandLineRunner {
 
-    private NioEventLoopGroup eventLoopGroup ;
+    private NioEventLoopGroup eventLoopGroup;
     private Channel channel;
+
     /**
      * netty核心组件
      * 1.nioEventLoop  网络指挥官
@@ -42,13 +44,13 @@ public class NettyClient implements CommandLineRunner {
      * 5.bytebuf   数据容器
      */
 
-    public void start(){
+    public void start() {
 
         //1.创建
-        eventLoopGroup=new NioEventLoopGroup();
+        eventLoopGroup = new NioEventLoopGroup();
 
 
-        Bootstrap bootstrap=new
+        Bootstrap bootstrap = new
                 Bootstrap();
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
@@ -63,9 +65,13 @@ public class NettyClient implements CommandLineRunner {
 //                        pipeline.addLast(new FixedLengthFrameDecoder(11));
 //                        pipeline.addLast(new StringEncoder());
 //                        pipeline.addLast(new MySimpleClientPkgHandler());
-                        //将bytebuf转换成protobuf
-                        pipeline.addLast(new ProtobufEncoder());
-                        pipeline.addLast(new MySimpleClientProtoHandler());
+
+                        pipeline
+                                //解决protobuf类型的粘包和拆包问题内置处理器(通过在数据包的包头添加消息的长度)
+                                .addLast(new ProtobufVarint32LengthFieldPrepender())
+                                //将bytebuf转换成protobuf
+                                .addLast(new ProtobufEncoder())
+                                .addLast(new MySimpleClientProtoHandler());
 
                     }
                 });
@@ -73,14 +79,14 @@ public class NettyClient implements CommandLineRunner {
         //2.启动
         ChannelFuture future = null;
         try {
-            future = bootstrap.connect("localhost",8888).sync();
-            if(future.isSuccess()) log.info("client start success");
+            future = bootstrap.connect("localhost", 8888).sync();
+            if (future.isSuccess()) log.info("client start success");
             // 保持线程处于wait 监听阶段
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }finally {
-            if(eventLoopGroup!=null) eventLoopGroup.shutdownGracefully();
+        } finally {
+            if (eventLoopGroup != null) eventLoopGroup.shutdownGracefully();
             if (channel != null) channel.closeFuture();
         }
 
@@ -91,9 +97,9 @@ public class NettyClient implements CommandLineRunner {
      * 注解@PreDestroy 在容器销毁前执行
      */
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         try {
-            if(eventLoopGroup!=null) eventLoopGroup.shutdownGracefully().sync();
+            if (eventLoopGroup != null) eventLoopGroup.shutdownGracefully().sync();
             if (channel != null) channel.closeFuture().syncUninterruptibly();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

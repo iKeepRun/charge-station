@@ -11,6 +11,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.FixedLengthFrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufDecoder;
+import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -63,8 +64,12 @@ public class NettyServer implements CommandLineRunner {
 //                        pipeline.addLast(new FixedLengthFrameDecoder(11));
 //                        pipeline.addLast(new StringDecoder());
 //                        pipeline.addLast(new MySimpleServerPkgHandler());
+
+                        //取出protobuf数据包包头的包长度，解决粘包拆包问题
+                        pipeline.addLast(new ProtobufVarint32FrameDecoder());
                         //指定需要解码的protobuf对象类型
                         pipeline.addLast(new ProtobufDecoder(UserProtobuf.User.getDefaultInstance()));
+                        //protobuf消息实例的接收
                         pipeline.addLast(new MySimpleServerProtoHandler());
                     }
                 });
