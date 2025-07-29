@@ -1,12 +1,11 @@
 package com.zhuritec.netty;
 
-import com.zhuritec.netty.handler.MyAdapterServerHandler;
-import com.zhuritec.netty.handler.MySimpleServerHandler;
 import com.zhuritec.netty.handler.MySimpleServerPkgHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.FixedLengthFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +18,10 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Order(1)
 public class NettyServer implements CommandLineRunner {
-     private   NioEventLoopGroup bossGroup ;
-     private   NioEventLoopGroup workerGroup ;
-     private Channel channel;
+    private NioEventLoopGroup bossGroup;
+    private NioEventLoopGroup workerGroup;
+    private Channel channel;
+
     /**
      * netty核心组件
      * 1.nioEventLoop  网络指挥官
@@ -31,17 +31,17 @@ public class NettyServer implements CommandLineRunner {
      * 5.bytebuf   数据容器
      */
 
-    public void start(){
+    public void start() {
 
         //1.创建
-         bossGroup=new NioEventLoopGroup();
-         workerGroup=new NioEventLoopGroup();
+        bossGroup = new NioEventLoopGroup();
+        workerGroup = new NioEventLoopGroup();
 
-        ServerBootstrap bootstrap=new
+        ServerBootstrap bootstrap = new
                 ServerBootstrap();
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
-                  //配置服务端channel的缓冲器大小
+                //配置服务端channel的缓冲器大小
 //              .option(ChannelOption.SO_RCVBUF,3)
                 .childHandler(new ChannelInitializer<>() {
                     @Override
@@ -51,6 +51,7 @@ public class NettyServer implements CommandLineRunner {
 
 //                        pipeline.addLast(new MySimpleServerHandler());
 //                        pipeline.addLast(new MyAdapterServerHandler());
+                        pipeline.addLast(new FixedLengthFrameDecoder(11));
                         pipeline.addLast(new StringDecoder());
                         pipeline.addLast(new MySimpleServerPkgHandler());
                     }
@@ -60,17 +61,16 @@ public class NettyServer implements CommandLineRunner {
         ChannelFuture future = null;
         try {
             future = bootstrap.bind(8888).sync();
-            if(future.isSuccess()) log.info("netty server start success");
+            if (future.isSuccess()) log.info("netty server start success");
             /**
              * closeFuture().sync()阻塞等待，服务端线程变成wait状态，直到服务端监听端口关闭
              */
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }finally {
+        } finally {
             destroy();
         }
-
 
 
     }
@@ -78,13 +78,12 @@ public class NettyServer implements CommandLineRunner {
     /**
      * netty关闭
      * 注解 @PreDestroy  在spring容器销毁之前执行
-     *
      */
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         try {
-            if(bossGroup!=null) bossGroup.shutdownGracefully().sync();
-            if(workerGroup!=null) workerGroup.shutdownGracefully().sync();
+            if (bossGroup != null) bossGroup.shutdownGracefully().sync();
+            if (workerGroup != null) workerGroup.shutdownGracefully().sync();
             if (channel != null) channel.closeFuture().syncUninterruptibly();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -94,6 +93,7 @@ public class NettyServer implements CommandLineRunner {
 
     /**
      * 异步启动netty server 避免阻塞springboot启动
+     *
      * @param args
      * @throws Exception
      */

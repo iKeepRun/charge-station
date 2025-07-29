@@ -28,7 +28,7 @@ public class MySimpleClientPkgHandler extends SimpleChannelInboundHandler<String
         log.info("客户端channel已经就绪");
 //        log.info("客户端的id:",ctx.channel().id().asLongText());
 
-        String msg="你好，这是一条来自客户端的消息！！！";
+        String msg="hello world";
         for (int i = 1; i <=100; i++) {
 
             log.info("客户端第{}次发送消息:{}",i,msg);

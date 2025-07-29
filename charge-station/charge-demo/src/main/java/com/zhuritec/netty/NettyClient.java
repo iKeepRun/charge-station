@@ -11,6 +11,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.FixedLengthFrameDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,8 @@ public class NettyClient implements CommandLineRunner {
                     protected void initChannel(Channel ch) throws Exception {
 
                         ChannelPipeline pipeline = ch.pipeline();
+                        //固定发送消息的大小，解决粘包拆包问题
+                        pipeline.addLast(new FixedLengthFrameDecoder(11));
                         pipeline.addLast(new StringEncoder());
                         pipeline.addLast(new MySimpleClientPkgHandler());
 
