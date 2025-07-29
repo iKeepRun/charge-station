@@ -1,7 +1,5 @@
-package com.zhuritec.netty;
+package com.zhuritec.websocket;
 
-import com.zhuritec.netty.handler.MyAdapterServerHandler;
-import com.zhuritec.netty.handler.MySimpleServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -9,6 +7,8 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpServerCodec;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -16,13 +16,14 @@ import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-@Component
+
 @Slf4j
 @Order(1)
-public class NettyServer implements CommandLineRunner {
-     private   NioEventLoopGroup bossGroup ;
-     private   NioEventLoopGroup workerGroup ;
-     private Channel channel;
+@Component
+public class WebsoketServer implements CommandLineRunner {
+    private NioEventLoopGroup bossGroup ;
+    private   NioEventLoopGroup workerGroup ;
+    private Channel channel;
     /**
      * netty核心组件
      * 1.nioEventLoop  网络指挥官
@@ -35,23 +36,14 @@ public class NettyServer implements CommandLineRunner {
     public void start(){
 
         //1.创建
-         bossGroup=new NioEventLoopGroup();
-         workerGroup=new NioEventLoopGroup();
+        bossGroup=new NioEventLoopGroup();
+        workerGroup=new NioEventLoopGroup();
 
         ServerBootstrap bootstrap=new
                 ServerBootstrap();
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
-                .childHandler(new ChannelInitializer<>() {
-                    @Override
-                    protected void initChannel(Channel ch) {
-
-                        ChannelPipeline pipeline = ch.pipeline();
-
-                        pipeline.addLast(new MySimpleServerHandler());
-                        pipeline.addLast(new MyAdapterServerHandler());
-                    }
-                });
+                .childHandler(new MyChannelInit());
 
         //2.启动
         ChannelFuture future = null;

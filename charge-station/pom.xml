@@ -11,6 +11,7 @@
 
     <modules>
         <module>charge-demo</module>
+        <module>charge-netty-server</module>
     </modules>
 
     <properties>

@@ -1,5 +1,6 @@
 package com.zhuritec.netty;
 
+import com.zhuritec.netty.handler.MySimpleClientHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -48,7 +49,7 @@ public class NettyClient implements CommandLineRunner {
 
                         ChannelPipeline pipeline = ch.pipeline();
 
-                        pipeline.addLast();
+                        pipeline.addLast(new MySimpleClientHandler());
 
 
                     }
@@ -57,7 +58,7 @@ public class NettyClient implements CommandLineRunner {
         //2.启动
         ChannelFuture future = null;
         try {
-            future = bootstrap.connect("netty",8888).sync();
+            future = bootstrap.connect("localhost",8888).sync();
             if(future.isSuccess()) log.info("client start success");
             // 保持线程处于wait 监听阶段
             future.channel().closeFuture().sync();
@@ -68,12 +69,11 @@ public class NettyClient implements CommandLineRunner {
             if (channel != null) channel.closeFuture();
         }
 
-
-
     }
 
     /**
      * netty关闭
+     * 注解@PreDestroy 在容器销毁前执行
      */
     @PreDestroy
     public void destroy(){

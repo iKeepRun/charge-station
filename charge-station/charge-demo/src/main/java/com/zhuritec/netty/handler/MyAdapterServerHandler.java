@@ -15,7 +15,7 @@ public class MyAdapterServerHandler extends ChannelInboundHandlerAdapter {
         ByteBuf buf = (ByteBuf) msg;
 
         log.info("===MyAdapterServerHandler接收到客户端消息===：{}", buf.toString(StandardCharsets.UTF_8));
-        ctx.fireChannelRead(buf);
+//        ctx.fireChannelRead(buf);
     }
 
     @Override
