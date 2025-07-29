@@ -4,6 +4,7 @@ import com.zhuritec.netty.handler.MySimpleClientHandler;
 import com.zhuritec.netty.handler.MySimpleClientPkgHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -11,6 +12,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.FixedLengthFrameDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import jakarta.annotation.PreDestroy;
@@ -19,6 +21,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Component
@@ -51,8 +55,10 @@ public class NettyClient implements CommandLineRunner {
                     protected void initChannel(Channel ch) throws Exception {
 
                         ChannelPipeline pipeline = ch.pipeline();
+                        //固定分隔符，解决粘包拆包问题
+                        pipeline.addLast(new DelimiterBasedFrameDecoder(1024, Unpooled.copiedBuffer("$_$".getBytes(StandardCharsets.UTF_8))));
                         //固定发送消息的大小，解决粘包拆包问题
-                        pipeline.addLast(new FixedLengthFrameDecoder(11));
+//                        pipeline.addLast(new FixedLengthFrameDecoder(11));
                         pipeline.addLast(new StringEncoder());
                         pipeline.addLast(new MySimpleClientPkgHandler());
 
