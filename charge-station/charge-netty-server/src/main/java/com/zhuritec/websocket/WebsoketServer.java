@@ -48,7 +48,7 @@ public class WebsoketServer implements CommandLineRunner {
         //2.启动
         ChannelFuture future = null;
         try {
-            future = bootstrap.bind(8888).sync();
+            future = bootstrap.bind(8989).sync();
             if(future.isSuccess()) log.info("netty server start success");
             /**
              * closeFuture().sync()阻塞等待，服务端线程变成wait状态，直到服务端监听端口关闭

@@ -2,13 +2,12 @@ package com.zhuritec.netty;
 
 import com.zhuritec.netty.handler.MyAdapterServerHandler;
 import com.zhuritec.netty.handler.MySimpleServerHandler;
+import com.zhuritec.netty.handler.MySimpleServerPkgHandler;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.string.StringDecoder;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -42,14 +41,18 @@ public class NettyServer implements CommandLineRunner {
                 ServerBootstrap();
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
+                  //配置服务端channel的缓冲器大小
+//              .option(ChannelOption.SO_RCVBUF,3)
                 .childHandler(new ChannelInitializer<>() {
                     @Override
                     protected void initChannel(Channel ch) {
 
                         ChannelPipeline pipeline = ch.pipeline();
 
-                        pipeline.addLast(new MySimpleServerHandler());
-                        pipeline.addLast(new MyAdapterServerHandler());
+//                        pipeline.addLast(new MySimpleServerHandler());
+//                        pipeline.addLast(new MyAdapterServerHandler());
+                        pipeline.addLast(new StringDecoder());
+                        pipeline.addLast(new MySimpleServerPkgHandler());
                     }
                 });
 

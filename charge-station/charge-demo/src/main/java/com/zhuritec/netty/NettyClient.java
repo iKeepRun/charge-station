@@ -1,6 +1,7 @@
 package com.zhuritec.netty;
 
 import com.zhuritec.netty.handler.MySimpleClientHandler;
+import com.zhuritec.netty.handler.MySimpleClientPkgHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -10,6 +11,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.string.StringEncoder;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -48,8 +50,8 @@ public class NettyClient implements CommandLineRunner {
                     protected void initChannel(Channel ch) throws Exception {
 
                         ChannelPipeline pipeline = ch.pipeline();
-
-                        pipeline.addLast(new MySimpleClientHandler());
+                        pipeline.addLast(new StringEncoder());
+                        pipeline.addLast(new MySimpleClientPkgHandler());
 
 
                     }
