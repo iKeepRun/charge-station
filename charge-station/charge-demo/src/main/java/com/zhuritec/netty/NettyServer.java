@@ -56,21 +56,22 @@ public class NettyServer implements CommandLineRunner {
                     protected void initChannel(Channel ch) {
 
                         ChannelPipeline pipeline = ch.pipeline();
+                          pipeline
+//                        .addLast(new MySimpleServerHandler())
+//                        .addLast(new MyAdapterServerHandler())
+                        //解决粘包和拆包问题：添加固定的分隔符来解决粘包拆包的问题
+//                        .addLast(new DelimiterBasedFrameDecoder(1024, Unpooled.copiedBuffer("$_$".getBytes(StandardCharsets.UTF_8))))
+                        //解决粘包拆包问题：通过固定服务器端收到的数据包的大小
+//                        .addLast(new FixedLengthFrameDecoder(11))
+//                        .addLast(new StringDecoder())
+//                        .addLast(new MySimpleServerPkgHandler())
 
-//                        pipeline.addLast(new MySimpleServerHandler());
-//                        pipeline.addLast(new MyAdapterServerHandler());
-                        //添加固定的分隔符来解决粘包拆包的问题
-//                        pipeline.addLast(new DelimiterBasedFrameDecoder(1024, Unpooled.copiedBuffer("$_$".getBytes(StandardCharsets.UTF_8))));
-//                        pipeline.addLast(new FixedLengthFrameDecoder(11));
-//                        pipeline.addLast(new StringDecoder());
-//                        pipeline.addLast(new MySimpleServerPkgHandler());
-
-                        //取出protobuf数据包包头的包长度，解决粘包拆包问题
-                        pipeline.addLast(new ProtobufVarint32FrameDecoder());
-                        //指定需要解码的protobuf对象类型
-                        pipeline.addLast(new ProtobufDecoder(UserProtobuf.User.getDefaultInstance()));
+                        // 解决粘包拆包问题,取出protobuf数据包包头的包长度
+                        .addLast(new ProtobufVarint32FrameDecoder())
+                        //protobuf解码器：指定需要解码的protobuf对象类型
+                        .addLast(new ProtobufDecoder(UserProtobuf.User.getDefaultInstance()))
                         //protobuf消息实例的接收
-                        pipeline.addLast(new MySimpleServerProtoHandler());
+                        .addLast(new MySimpleServerProtoHandler());
                     }
                 });
 

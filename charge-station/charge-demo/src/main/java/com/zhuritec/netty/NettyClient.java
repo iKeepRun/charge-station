@@ -6,10 +6,7 @@ import com.zhuritec.netty.handler.MySimpleClientProtoHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -26,6 +23,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -59,38 +57,66 @@ public class NettyClient implements CommandLineRunner {
                     protected void initChannel(Channel ch) throws Exception {
 
                         ChannelPipeline pipeline = ch.pipeline();
-                        //固定分隔符，解决粘包拆包问题
-//                        pipeline.addLast(new DelimiterBasedFrameDecoder(1024, Unpooled.copiedBuffer("$_$".getBytes(StandardCharsets.UTF_8))));
-                        //固定发送消息的大小，解决粘包拆包问题
-//                        pipeline.addLast(new FixedLengthFrameDecoder(11));
-//                        pipeline.addLast(new StringEncoder());
-//                        pipeline.addLast(new MySimpleClientPkgHandler());
-
                         pipeline
-                                //解决protobuf类型的粘包和拆包问题内置处理器(通过在数据包的包头添加消息的长度)
-                                .addLast(new ProtobufVarint32LengthFieldPrepender())
-                                //将bytebuf转换成protobuf
-                                .addLast(new ProtobufEncoder())
-                                .addLast(new MySimpleClientProtoHandler());
+                                //固定分隔符，解决粘包拆包问题
+//                        .addLast(new DelimiterBasedFrameDecoder(1024, Unpooled.copiedBuffer("$_$".getBytes(StandardCharsets.UTF_8))))
+                                //固定发送消息的大小，解决粘包拆包问题
+//                        .addLast(new FixedLengthFrameDecoder(11))
+//                        .addLast(new StringEncoder())
+//                        .addLast(new MySimpleClientPkgHandler())
+
+
+                            //解决protobuf类型的粘包和拆包问题内置处理器(通过在数据包的包头添加消息的长度)
+                            .addLast(new ProtobufVarint32LengthFieldPrepender())
+                            //将bytebuf转换成protobuf
+                            .addLast(new ProtobufEncoder())
+                            .addLast(new MySimpleClientProtoHandler());
 
                     }
                 });
 
+
+        doConnect(bootstrap);
+
+    }
+
+    /**
+     * 封装了客户端连接的方法
+     *
+     * @param bootstrap
+     */
+    public  void doConnect(Bootstrap bootstrap) {
         //2.启动
         ChannelFuture future = null;
         try {
             future = bootstrap.connect("localhost", 8888).sync();
-            if (future.isSuccess()) log.info("client start success");
+            //注册监听器
+            future.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    if (future.isSuccess()) {
+                        log.info("客户端连接成功");
+                    }
+                    else {
+                        log.info("客户端连接失败,尝试重连.....");
+//                        future.cause().printStackTrace();
+                        //这里应该重开一个线程，一直尝试重新连接
+                        eventLoopGroup.schedule(() -> doConnect(bootstrap), 5, TimeUnit.SECONDS);
+                    }
+                }
+            });
+
             // 保持线程处于wait 监听阶段
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
+            log.info("客户端关闭");
             if (eventLoopGroup != null) eventLoopGroup.shutdownGracefully();
             if (channel != null) channel.closeFuture();
         }
-
     }
+
 
     /**
      * netty关闭
