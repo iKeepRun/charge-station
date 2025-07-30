@@ -1,5 +1,6 @@
 package com.zhuritec.netty;
 
+import com.zhuritec.netty.handler.MyServerHeartBeatHandler;
 import com.zhuritec.netty.handler.MySimpleServerPkgHandler;
 import com.zhuritec.netty.handler.MySimpleServerProtoHandler;
 import com.zhuritec.protobuf.UserProtobuf;
@@ -13,6 +14,7 @@ import io.netty.handler.codec.FixedLengthFrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.timeout.IdleStateHandler;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -21,6 +23,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
@@ -56,22 +59,26 @@ public class NettyServer implements CommandLineRunner {
                     protected void initChannel(Channel ch) {
 
                         ChannelPipeline pipeline = ch.pipeline();
-                          pipeline
+                        pipeline
+                                //添加空闲监测处理器
+                                .addLast(new IdleStateHandler(60,60,60, TimeUnit.SECONDS))
+                                //处理超时事件的处理器（断开连接或者发送心跳包）
+                                .addLast(new MyServerHeartBeatHandler())
 //                        .addLast(new MySimpleServerHandler())
 //                        .addLast(new MyAdapterServerHandler())
-                        //解决粘包和拆包问题：添加固定的分隔符来解决粘包拆包的问题
+                                //解决粘包和拆包问题：添加固定的分隔符来解决粘包拆包的问题
 //                        .addLast(new DelimiterBasedFrameDecoder(1024, Unpooled.copiedBuffer("$_$".getBytes(StandardCharsets.UTF_8))))
-                        //解决粘包拆包问题：通过固定服务器端收到的数据包的大小
+                                //解决粘包拆包问题：通过固定服务器端收到的数据包的大小
 //                        .addLast(new FixedLengthFrameDecoder(11))
 //                        .addLast(new StringDecoder())
 //                        .addLast(new MySimpleServerPkgHandler())
 
-                        // 解决粘包拆包问题,取出protobuf数据包包头的包长度
-                        .addLast(new ProtobufVarint32FrameDecoder())
-                        //protobuf解码器：指定需要解码的protobuf对象类型
-                        .addLast(new ProtobufDecoder(UserProtobuf.User.getDefaultInstance()))
-                        //protobuf消息实例的接收
-                        .addLast(new MySimpleServerProtoHandler());
+                                // 解决粘包拆包问题,取出protobuf数据包包头的包长度
+                                .addLast(new ProtobufVarint32FrameDecoder())
+                                //protobuf解码器：指定需要解码的protobuf对象类型
+                                .addLast(new ProtobufDecoder(UserProtobuf.User.getDefaultInstance()))
+                                //protobuf消息实例的接收
+                                .addLast(new MySimpleServerProtoHandler());
                     }
                 });
 

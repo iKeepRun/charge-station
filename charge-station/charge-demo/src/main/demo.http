@@ -17,7 +17,45 @@ Content-Type: application/x-www-form-urlencoded
 topic=test&message=哈喽!world
 
 ####
- POST localhost:8080/factory/sub
+  POST localhost:8080/factory/sub
 Content-Type: application/x-www-form-urlencoded
 
 topic="test"
+
+###
+# WebSocket消息发送测试接口
+
+# 发送消息给所有客户端
+POST localhost:8080/websocket/send/all
+Content-Type: application/x-www-form-urlencoded
+
+message=这是一条广播消息
+
+###
+# 发送消息给指定客户端
+POST localhost:8080/websocket/send/client
+Content-Type: application/x-www-form-urlencoded
+
+sessionId=your-session-id&message=这是给指定客户端的消息
+
+###
+# 发送系统通知
+POST localhost:8080/websocket/notification
+Content-Type: application/x-www-form-urlencoded
+
+title=系统通知&content=这是一条系统通知消息
+
+###
+# 发送心跳消息
+POST localhost:8080/websocket/heartbeat
+
+###
+# 发送数据更新消息
+POST localhost:8080/websocket/data-update
+Content-Type: application/x-www-form-urlencoded
+
+dataType=user&data={"id":1,"name":"张三","status":"online"}
+
+###
+# 获取连接信息
+GET localhost:8080/websocket/connections
