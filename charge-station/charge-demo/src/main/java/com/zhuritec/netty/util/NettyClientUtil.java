@@ -1,53 +1,26 @@
-package com.zhuritec.netty;
+package com.zhuritec.netty.util;
 
-import com.zhuritec.netty.handler.MySimpleClientHandler;
-import com.zhuritec.netty.handler.MySimpleClientPkgHandler;
 import com.zhuritec.netty.handler.MySimpleClientProtoHandler;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.FixedLengthFrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
-import io.netty.handler.codec.string.StringEncoder;
-import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.core.annotation.Order;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@Component
-@Order(2)
-public class NettyClient implements CommandLineRunner {
+public class NettyClientUtil {
 
     private NioEventLoopGroup eventLoopGroup;
     private Channel channel;
 
-    /**
-     * netty核心组件
-     * 1.nioEventLoop  网络指挥官
-     * 2.channel       快递小哥
-     * 3.channel pipeline  工序流水线
-     * 4.channel handler   流水线上的工人
-     * 5.bytebuf   数据容器
-     */
 
-    public void start() {
-
+    public void connect() {
         //1.创建
         eventLoopGroup = new NioEventLoopGroup();
-
-
         Bootstrap bootstrap = new
                 Bootstrap();
         bootstrap.group(eventLoopGroup)
@@ -66,11 +39,11 @@ public class NettyClient implements CommandLineRunner {
 //                        .addLast(new MySimpleClientPkgHandler())
 
 
-                            //解决protobuf类型的粘包和拆包问题内置处理器(通过在数据包的包头添加消息的长度)
-                            .addLast(new ProtobufVarint32LengthFieldPrepender())
-                            //将bytebuf转换成protobuf
-                            .addLast(new ProtobufEncoder())
-                            .addLast(new MySimpleClientProtoHandler());
+                                //解决protobuf类型的粘包和拆包问题内置处理器(通过在数据包的包头添加消息的长度)
+                                .addLast(new ProtobufVarint32LengthFieldPrepender())
+                                //将bytebuf转换成protobuf
+                                .addLast(new ProtobufEncoder())
+                                .addLast(new MySimpleClientProtoHandler());
 
                     }
                 });
@@ -80,15 +53,12 @@ public class NettyClient implements CommandLineRunner {
 
     }
 
-    /**
-     * 封装了客户端连接的方法
-     *
-     * @param bootstrap
-     */
-    public  void doConnect(Bootstrap bootstrap) {
+    public  void doConnect(  Bootstrap bootstrap) {
         //2.启动
         ChannelFuture future = null;
+
         try {
+
             future = bootstrap.connect("localhost", 8888).sync();
             /**
              * 注册监听器，只能监听客户端启动的时候是否连接上服务端
@@ -119,26 +89,5 @@ public class NettyClient implements CommandLineRunner {
             if (eventLoopGroup != null) eventLoopGroup.shutdownGracefully();
             if (channel != null) channel.closeFuture();
         }
-    }
-
-
-    /**
-     * netty关闭
-     * 注解@PreDestroy 在容器销毁前执行
-     */
-    @PreDestroy
-    public void destroy() {
-        try {
-            if (eventLoopGroup != null) eventLoopGroup.shutdownGracefully().sync();
-            if (channel != null) channel.closeFuture().syncUninterruptibly();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    @Async
-    public void run(String... args) throws Exception {
-        start();
     }
 }
