@@ -12,6 +12,8 @@
     <modules>
         <module>charge-demo</module>
         <module>charge-netty-server</module>
+        <module>charge-mqtt-client</module>
+        <module>charge-protocol</module>
     </modules>
 
     <properties>
