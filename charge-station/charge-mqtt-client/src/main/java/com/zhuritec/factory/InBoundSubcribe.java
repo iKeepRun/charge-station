@@ -45,14 +45,11 @@ public class InBoundSubcribe {
         return new DirectChannel();
     }
 
-    @Bean
-    @ServiceActivator(inputChannel = MqttConstant.INBOUND_CHANNEL_NAME)
-    public MessageHandler inHandler(){
-        return inBoundhandler;
-    }
+
 
 
     /**
+     * 配置接收消息的主题（这里用于接收充电桩状态数据）
      * 配置订阅主题的适配器(接收消息)
      * @return
      */
@@ -64,4 +61,14 @@ public class InBoundSubcribe {
         adapter.setOutputChannel(getInboundChannel());
         return adapter;
     }
+
+    /**
+     *   接收消息处理器
+     */
+    @Bean
+    @ServiceActivator(inputChannel = MqttConstant.INBOUND_CHANNEL_NAME)
+    public MessageHandler inHandler(){
+        return inBoundhandler;
+    }
+
 }

@@ -2,7 +2,6 @@ package com.zhuritec.handlers;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelId;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
@@ -14,10 +13,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MyWebSocketInboundHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
     private final ConcurrentHashMap concurrentHashMap = new ConcurrentHashMap<String, Channel>();
 
+
+
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
-        log.info(">>>>>>>>>自定义入站处理器添加通道：", channel.id().asLongText());
+        log.info(">>>>>>>>>有新的客户端连接了：", channel.id().asLongText());
         concurrentHashMap.put(channel.id().asLongText(), channel);
     }
 
@@ -25,6 +26,7 @@ public class MyWebSocketInboundHandler extends SimpleChannelInboundHandler<WebSo
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
         concurrentHashMap.remove(channel.id().asLongText());
+        log.info(">>>>>>>>>客户端断开了连接：", channel.id().asLongText());
     }
 
 

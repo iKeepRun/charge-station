@@ -11,9 +11,15 @@
 
     <modules>
         <module>charge-demo</module>
+        <!--  Netty服务端与小程序进行通讯-->
         <module>charge-netty-server</module>
+        <!--  Mqtt客户端（与Mqtt服务端EMQX进行通讯） -->
         <module>charge-mqtt-client</module>
+        <!--  通信协议模块（私有协议） -->
         <module>charge-protocol</module>
+        <!--  时序数据库模块 -->
+        <module>charge-iotdb</module>
+        <module>charge-common</module>
     </modules>
 
     <properties>
@@ -24,6 +30,11 @@
         <lombok.version>1.18.24</lombok.version>
         <netty.version>4.1.68.Final</netty.version>
         <protobuf-java-util.version>4.28.3</protobuf-java-util.version>
+        <okhttp.version>4.9.3</okhttp.version>
+        <spring.cloud.version>2022.0.0</spring.cloud.version>
+        <!-- fastjson2 版本 -->
+        <fastjson.version>2.0.33</fastjson.version>
+<!--        <openfeign.version>3.1.1</openfeign.version>-->
     </properties>
 
     <!--  全局导入 -->
@@ -74,6 +85,28 @@
                 <artifactId>protobuf-java-util</artifactId>
                 <version>${protobuf-java-util.version}</version>
         </dependency>
+
+<!--        okhttp-->
+        <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>${okhttp.version}</version>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-starter-openfeign</artifactId>-->
+<!--            <version>${openfeign.version}</version>-->
+<!--        </dependency>-->
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
     </dependencies>
 
 
@@ -91,6 +124,22 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <!-- 添加 Spring Cloud 依赖管理 -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring.cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- json2 -->
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 </project>

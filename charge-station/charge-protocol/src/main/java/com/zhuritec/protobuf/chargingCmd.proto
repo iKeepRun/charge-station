@@ -1,0 +1,13 @@
+
+syntax = "proto3";
+
+option java_package = "gen";
+option java_outer_classname = "ChargingCmdProto";
+
+
+
+
+message ChargingCmd {
+
+  string cmd = 1;
+}

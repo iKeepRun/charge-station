@@ -1,10 +1,12 @@
 package com.zhuritec.service;
 
 
+import com.zhuritec.message.ChargePayload;
 import com.zhuritec.model.MqttConstant;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.mqtt.support.MqttHeaders;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.Header;
 
 /**
@@ -14,6 +16,8 @@ import org.springframework.messaging.handler.annotation.Header;
 @MessagingGateway(defaultRequestChannel = MqttConstant.OUTBOUND_CHANNEL_NAME)
 public interface MqttService {
 
-    void sendToMqtt(@Header(MqttHeaders.TOPIC)String topic, String message);
+    void sendToMqtt(@Header(MqttHeaders.TOPIC)String topic, ChargePayload message);
+    void sendToMqtt(@Header(MqttHeaders.TOPIC)String topic, Message<byte[]> message);
+//    void sendToMqtt(@Header(MqttHeaders.TOPIC)String topic, String message);
 
 }

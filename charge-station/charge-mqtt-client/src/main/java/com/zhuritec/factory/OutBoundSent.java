@@ -30,6 +30,13 @@ public class OutBoundSent {
      *============================================================
      */
 
+//    @Bean
+//    public MqttMessageConverter getMqttMessageConverter(){
+//        DefaultPahoMessageConverter converter = new DefaultPahoMessageConverter();
+//        converter.setPayloadAsBytes(false);
+//        return converter;
+//    }
+
     // 发送通道
     @Bean(name= MqttConstant.OUTBOUND_CHANNEL_NAME)
     public MessageChannel getOutboundChannel(){
@@ -44,9 +51,10 @@ public class OutBoundSent {
      */
     @Bean
     @ServiceActivator(inputChannel = MqttConstant.OUTBOUND_CHANNEL_NAME)
-    public MqttPahoMessageHandler outHandler(DirectChannel errorChannel){
+    public MqttPahoMessageHandler outHandler(){
         MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(mqttconfig.getClientId(), factory);
         log.info("发送消息到：{}",messageHandler.getConnectionInfo());
+//        messageHandler.setConverter(getMqttMessageConverter());
         return messageHandler;
     }
 }

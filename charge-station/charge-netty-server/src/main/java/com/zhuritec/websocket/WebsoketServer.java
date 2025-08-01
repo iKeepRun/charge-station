@@ -24,6 +24,13 @@ public class WebsoketServer implements CommandLineRunner {
     private NioEventLoopGroup bossGroup ;
     private   NioEventLoopGroup workerGroup ;
     private Channel channel;
+    
+    private final MyChannelInit myChannelInit;
+    
+    public WebsoketServer(MyChannelInit myChannelInit) {
+        this.myChannelInit = myChannelInit;
+    }
+    
     /**
      * netty核心组件
      * 1.nioEventLoop  网络指挥官
@@ -43,7 +50,7 @@ public class WebsoketServer implements CommandLineRunner {
                 ServerBootstrap();
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
-                .childHandler(new MyChannelInit());
+                .childHandler(myChannelInit);
 
         //2.启动
         ChannelFuture future = null;

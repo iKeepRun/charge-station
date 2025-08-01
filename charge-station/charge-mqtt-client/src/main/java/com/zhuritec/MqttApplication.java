@@ -8,7 +8,10 @@ import com.zhuritec.conf.Mqttconfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
+
+@EnableFeignClients(basePackages = "com.zhuritec.micro")
 @SpringBootApplication
 @EnableConfigurationProperties(value = Mqttconfig.class)
 public class MqttApplication {
