@@ -2,6 +2,7 @@ package com.zhuritec.websocket;
 
 import com.zhuritec.handlers.MyProtoBufMsgHandler;
 import com.zhuritec.handlers.MyServerHeartBeatHandler;
+import com.zhuritec.handlers.MyWebSocketOutboundHandler;
 import com.zhuritec.handlers.ProtoTobinaryMsgHandler;
 import com.zhuritec.protobuf.ChargingCmdProto;
 import io.netty.channel.Channel;
@@ -56,6 +57,8 @@ public class MyChannelInit extends ChannelInitializer {
 //                .addLast(new MyWebSocketInboundHandler())
                 //处理反序列化之后的充电指令消息
                 .addLast(myProtoBufMsgHandler)
+                //出站消息处理器 （向客户端推送消息）
+                .addLast(new MyWebSocketOutboundHandler())
         ;
     }
 }
