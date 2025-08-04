@@ -1,0 +1,7 @@
+iotdb:
+   host : localhost
+   port : 6667
+   username : root
+   password : root
+#   storageGroup : root.zhuri
+   maxSize : 200
