@@ -12,6 +12,7 @@ public class Mqttconfig {
     private String username;
     private String password;
     private MqttConnectOptions options;
-    private String topic;
+    private String  topics;
+
 
 }

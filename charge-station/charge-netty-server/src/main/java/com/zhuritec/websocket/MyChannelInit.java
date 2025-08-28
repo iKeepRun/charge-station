@@ -2,7 +2,7 @@ package com.zhuritec.websocket;
 
 import com.zhuritec.handlers.MyProtoBufMsgHandler;
 import com.zhuritec.handlers.MyServerHeartBeatHandler;
-import com.zhuritec.handlers.MyWebSocketOutboundHandler;
+import com.zhuritec.handlers.MyWebSocketInboundHandler;
 import com.zhuritec.handlers.ProtoTobinaryMsgHandler;
 import com.zhuritec.protobuf.ChargingCmdProto;
 import io.netty.channel.Channel;
@@ -13,21 +13,16 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
-
 @Component
-@Slf4j
 public class MyChannelInit extends ChannelInitializer {
-    
-    private final MyProtoBufMsgHandler myProtoBufMsgHandler;
-    
+    private MyProtoBufMsgHandler myProtoBufMsgHandler;
+
     public MyChannelInit(MyProtoBufMsgHandler myProtoBufMsgHandler) {
         this.myProtoBufMsgHandler = myProtoBufMsgHandler;
     }
-    
     @Override
     protected void initChannel(Channel channel) throws Exception {
         ChannelPipeline pipeline = channel.pipeline();
@@ -54,11 +49,9 @@ public class MyChannelInit extends ChannelInitializer {
                 .addLast(new ProtobufDecoder(ChargingCmdProto.ChargingCmd.getDefaultInstance()))
 
                 // 自定义处理器
-//                .addLast(new MyWebSocketInboundHandler())
+                .addLast(new MyWebSocketInboundHandler())
                 //处理反序列化之后的充电指令消息
                 .addLast(myProtoBufMsgHandler)
-                //出站消息处理器 （向客户端推送消息）
-                .addLast(new MyWebSocketOutboundHandler())
         ;
     }
 }

@@ -16,7 +16,7 @@ import org.springframework.messaging.handler.annotation.Header;
 @MessagingGateway(defaultRequestChannel = MqttConstant.OUTBOUND_CHANNEL_NAME)
 public interface MqttService {
 
-    void sendToMqtt(@Header(MqttHeaders.TOPIC)String topic, ChargePayload message);
+    void sendToMqtt(@Header(MqttHeaders.TOPIC)String  topic, ChargePayload message);
     void sendToMqtt(@Header(MqttHeaders.TOPIC)String topic, Message<byte[]> message);
 //    void sendToMqtt(@Header(MqttHeaders.TOPIC)String topic, String message);
 

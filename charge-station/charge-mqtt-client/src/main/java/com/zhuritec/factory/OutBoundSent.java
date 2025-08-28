@@ -52,7 +52,7 @@ public class OutBoundSent {
     @Bean
     @ServiceActivator(inputChannel = MqttConstant.OUTBOUND_CHANNEL_NAME)
     public MqttPahoMessageHandler outHandler(){
-        MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(mqttconfig.getClientId(), factory);
+        MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(mqttconfig.getClientId()+"_out", factory);
         log.info("发送消息到：{}",messageHandler.getConnectionInfo());
 //        messageHandler.setConverter(getMqttMessageConverter());
         return messageHandler;

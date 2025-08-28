@@ -2,32 +2,23 @@ package com.zhuritec.factory;
 
 
 import com.zhuritec.conf.Mqttconfig;
-import com.zhuritec.model.MqttConstant;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.integration.annotation.ServiceActivator;
-import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.config.EnableIntegration;
-import org.springframework.integration.core.MessageProducer;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
-import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
-import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
-import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageHandler;
-import org.springframework.messaging.MessagingException;
+
+import java.nio.charset.StandardCharsets;
 
 
 /**
  * 注解EnableIntegration作用是能够扫描到@ServiceActivator注解的方法
  */
 @Slf4j
-//@EnableIntegration
+@EnableIntegration
 @Configuration
 public class MqttFactory {
     @Resource
@@ -40,7 +31,21 @@ public class MqttFactory {
         options.setServerURIs(new String[]{
                 mqttconfig.getHost()
         });
+        //设置遗嘱消息，从配置文件中读取设备id
+        options.setWill("mqtt/willMsg",
+                new String("offline").getBytes(StandardCharsets.UTF_8),
+                2,
+                true);
+
+        options.setCleanSession(false);    //保持会话
+        options.setAutomaticReconnect(true); //自动重连
+        options.setKeepAliveInterval(60);     //心跳时间
+        options.setConnectionTimeout(30);     //连接超时时间
+
+
         factory.setConnectionOptions(options);
+
+
         return factory;
 
     }

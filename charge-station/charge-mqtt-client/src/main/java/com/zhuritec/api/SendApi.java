@@ -16,26 +16,29 @@ import org.springframework.web.bind.annotation.RestController;
 public class SendApi {
     @Resource
     private MqttService mqttService;
-   @Resource
+    @Resource
     private Mqttconfig mqttconfig;
 
 
     /**
      * desc:
-     *     mqtt报文格式： 固定报头+可变报头+有效负载
-     *     固定报头： 2-5个字节
-     *     有效负载：就是发送的具体消息（自定义类型 ChargePayload）
+     * mqtt报文格式： 固定报头+可变报头+有效负载
+     * 固定报头： 2-5个字节
+     * 有效负载：就是发送的具体消息（自定义类型 ChargePayload）
      * 发送消息
+     *
      * @param msg
      */
-    @RequestMapping(path = "/mqtt/send",method = RequestMethod.POST)
-    public String  send(@RequestBody ChargePayload msg) {
+    @RequestMapping(path = "/mqtt/send", method = RequestMethod.POST)
+    public String send(@RequestBody ChargePayload msg) {
         String hex = TransformerUtils.objectToHex(msg);
         byte[] bytes = TransformerUtils.hexStringToByteArray(hex);
         Message<byte[]> payload = MessageBuilder.withPayload(bytes).build();
         //使用fastjson将消息进行转换
 //        String msgStr = JSON.toJSONString(msg);
-        mqttService.sendToMqtt(mqttconfig.getTopic(), payload);
+        for (String topic : mqttconfig.getTopics().split(",")) {
+            mqttService.sendToMqtt(topic, payload);
+        }
         return "mqtt send success!";
     }
 }

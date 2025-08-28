@@ -55,7 +55,7 @@ public class InBoundSubcribe {
      */
     @Bean
     public MessageProducer getAdapter(){
-        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(mqttconfig.getClientId(), factory, mqttconfig.getTopic());
+        MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(mqttconfig.getClientId()+"_in", factory, mqttconfig.getTopics().split(","));
 
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setOutputChannel(getInboundChannel());
@@ -70,5 +70,10 @@ public class InBoundSubcribe {
     public MessageHandler inHandler(){
         return inBoundhandler;
     }
+
+
+
+
+
 
 }

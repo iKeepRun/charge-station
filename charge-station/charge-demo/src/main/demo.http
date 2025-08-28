@@ -17,7 +17,7 @@ Content-Type: application/x-www-form-urlencoded
 topic=test&message=哈喽!world
 
 ####
-  POST localhost:8080/factory/sub
+ POST localhost:8080/factory/sub
 Content-Type: application/x-www-form-urlencoded
 
 topic="test"

@@ -15,7 +15,7 @@ public class MyServerHeartBeatHandler extends ChannelInboundHandlerAdapter {
                 case READER_IDLE:
                     log.info(">>>已经10sm没有接收到数据了");
                     //关闭连接
-                    ctx.channel().close();
+//                    ctx.channel().close();
                     break;
                 case WRITER_IDLE:
                     log.info("写空闲");
