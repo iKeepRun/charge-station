@@ -43,13 +43,12 @@ public class MyChannelInit extends ChannelInitializer {
                 .addLast(new HttpObjectAggregator(65536))
                  // 处理websocket协议的处理器
                 .addLast(new WebSocketServerProtocolHandler("/ws"))
+                // 自定义处理器
+                .addLast(new MyWebSocketInboundHandler())
                 // 将websocket请求的frame转换为ByteBuf
                 .addLast(new ProtoTobinaryMsgHandler())
                 // 将bytebuf转换为protobuf对象
                 .addLast(new ProtobufDecoder(ChargingCmdProto.ChargingCmd.getDefaultInstance()))
-
-                // 自定义处理器
-                .addLast(new MyWebSocketInboundHandler())
                 //处理反序列化之后的充电指令消息
                 .addLast(myProtoBufMsgHandler)
         ;

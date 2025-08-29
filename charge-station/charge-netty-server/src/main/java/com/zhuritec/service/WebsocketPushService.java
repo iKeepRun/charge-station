@@ -27,10 +27,10 @@ public class WebsocketPushService {
 
     public void pushById(String message, String id) {
         try {
-            Channel channel = WebsoketChannelManager.getChannelById(id);
+            log.info(">>>>>>>>>向用户{}发送消息：{}",id, message);
+            Channel channel = WebsoketChannelManager.getChannelByUserId(id);
             if (channel == null){
                 log.info(">>>>>>>>>没有用户在线");
-                return;
             }else{
                 channel.writeAndFlush(new TextWebSocketFrame(message));
                 log.info(">>>>>>>>>向用户{}发送消息：{}",id, message);

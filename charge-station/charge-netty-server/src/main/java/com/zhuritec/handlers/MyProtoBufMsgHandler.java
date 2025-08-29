@@ -3,6 +3,7 @@ package com.zhuritec.handlers;
 import com.zhuritec.message.ChargePayload;
 import com.zhuritec.micro.MqttMicroClient;
 import com.zhuritec.protobuf.ChargingCmdProto;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import jakarta.annotation.Resource;
@@ -16,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
  */
 @Slf4j
 @Component
+@ChannelHandler.Sharable
 public class MyProtoBufMsgHandler extends SimpleChannelInboundHandler<ChargingCmdProto.ChargingCmd> {
     @Resource
     private  MqttMicroClient mqttMicroClient;
@@ -28,6 +30,8 @@ public class MyProtoBufMsgHandler extends SimpleChannelInboundHandler<ChargingCm
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ChargingCmdProto.ChargingCmd msg) throws Exception {
+
+//        log.info("最后一个处理器的 引用计数器{}",);
         String cmd = msg.getCmd();
         char c = cmd.charAt(0);
         byte cmdByte=(byte)c;

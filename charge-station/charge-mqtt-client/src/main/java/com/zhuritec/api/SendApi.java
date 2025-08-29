@@ -36,9 +36,9 @@ public class SendApi {
         Message<byte[]> payload = MessageBuilder.withPayload(bytes).build();
         //使用fastjson将消息进行转换
 //        String msgStr = JSON.toJSONString(msg);
-        for (String topic : mqttconfig.getTopics().split(",")) {
-            mqttService.sendToMqtt(topic, payload);
-        }
+//        for (String topic : mqttconfig.getTopics().split(",")) {
+            mqttService.sendToMqtt("charge/cmd", payload);
+//        }
         return "mqtt send success!";
     }
 }

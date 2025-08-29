@@ -8,7 +8,7 @@ mqtt:
   host: tcp://localhost:18084
   clientId: charge_mqtt_client
   # 发送消息的主题
-  topics: charge/cmd,charge/resp,mqtt/willMsg,charge/status
+  topics: charge/cmd,charge/resp,charge/status
   options:
 #    username:
 #    password:

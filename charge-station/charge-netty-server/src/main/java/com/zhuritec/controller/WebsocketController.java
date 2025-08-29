@@ -2,6 +2,7 @@ package com.zhuritec.controller;
 
 import com.zhuritec.service.WebsocketPushService;
 import jakarta.annotation.Resource;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,8 +16,8 @@ public class WebsocketController {
         websocketPushService.pushAll(message);
     }
 
-    @PostMapping("/pushById")
-    public void pushById(String message, String id){
-        websocketPushService.pushById(message, id);
+    @PostMapping("/pushById/{userid}")
+    public void pushById(@RequestBody String message, @PathVariable("userid") String userid){
+        websocketPushService.pushById(message, userid);
     }
 }
